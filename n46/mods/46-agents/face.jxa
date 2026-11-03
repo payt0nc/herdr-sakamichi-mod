@@ -1,0 +1,15 @@
+// osascript -l JavaScript face.jxa <image>
+// Prints "<pixel width> <pixel height>", plus " <x> <y> <w> <h>" for the first face macOS
+// Vision finds (normalized 0..1, origin bottom-left), or "none" if it can't read the image.
+ObjC.import("Vision");
+ObjC.import("AppKit");
+function run(argv) {
+  const rep = $.NSImageRep.imageRepWithContentsOfFile(argv[0]);
+  if (!rep || rep.isNil()) return "none";
+  const size = `${rep.pixelsWide} ${rep.pixelsHigh}`;
+  const handler = $.VNImageRequestHandler.alloc.initWithURLOptions($.NSURL.fileURLWithPath(argv[0]), $({}));
+  const req = $.VNDetectFaceRectanglesRequest.alloc.init;
+  if (!handler.performRequestsError($([req]), null) || req.results.count < 1) return size;
+  const b = req.results.objectAtIndex(0).boundingBox;
+  return `${size} ${b.origin.x} ${b.origin.y} ${b.size.width} ${b.size.height}`;
+}

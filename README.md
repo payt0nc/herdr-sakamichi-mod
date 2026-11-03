@@ -6,6 +6,14 @@ Turn the coding agents in your [Herdr](https://herdr.dev) window into Sakamichi 
 
 This English README is the source; the translations follow it. The project is fan-made and not affiliated with Nogizaka46, Sakurazaka46, Hinatazaka46, their management, or Herdr. The repo contains no logos or member photos.
 
+## Screenshots
+
+Avatars are blurred here; the repo ships no member photos.
+
+| 乃木坂46 (`n46`) | 櫻坂46 (`s46`) | 日向坂46 (`h46`) |
+| --- | --- | --- |
+| ![乃木坂46 theme](docs/screenshots/n46.png) | ![櫻坂46 theme](docs/screenshots/s46.png) | ![日向坂46 theme](docs/screenshots/h46.png) |
+
 ## Features
 
 - **Members list.** One card per agent: avatar, member name, model (`岡本姫奈 / Opus 5.5`), an animated status, and HP / MP gauges.

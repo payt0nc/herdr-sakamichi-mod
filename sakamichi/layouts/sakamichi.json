@@ -40,7 +40,7 @@
               "id": "agents",
               "type": "block",
               "content": {
-                "mod": "46-agents"
+                "mod": "sakamichi-agents"
               },
               "size": {
                 "weight": 1
@@ -78,7 +78,7 @@
           "id": "tabs",
           "type": "block",
           "content": {
-            "mod": "46-tabs"
+            "mod": "sakamichi-tabs"
           },
           "size": {
             "px": 42
@@ -97,7 +97,7 @@
                 "pane": {
                   "header": {
                     "content": {
-                      "mod": "46-pane"
+                      "mod": "sakamichi-pane"
                     },
                     "reveal": "always",
                     "height": 30,
@@ -190,5 +190,5 @@
     16
   ],
   "theme": "n46",
-  "preview": "layouts/46.svg"
+  "preview": "layouts/sakamichi.svg"
 }

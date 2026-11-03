@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Claude Code statusLine for 46-agents. Saves this terminal's model name, context left (MP)
-// and 5-hour quota left (HP) to ~/.config/herdr-app/data/46-agents/sessions/<terminal>.json,
+// Claude Code statusLine for sakamichi-agents. Saves this terminal's model name, context left (MP)
+// and 5-hour quota left (HP) to ~/.config/herdr-app/data/sakamichi-agents/sessions/<terminal>.json,
 // then hands the same input to your own status line, if you name it, and prints its output:
-//   node ~/.config/herdr-app/mods/46-agents/statusline.mjs ccstatusline
+//   node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs ccstatusline
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -15,7 +15,7 @@ const pct = (v) => (typeof v === "number" && v >= 0 && v <= 100 ? Math.round(v) 
 
 function save(input) {
   const id = process.env.HC_TERMINAL_ID ?? ""; // set by Herdr in every terminal
-  const dir = join(process.env.HERDR_APP_HOME || join(homedir(), ".config/herdr-app"), "data/46-agents/sessions");
+  const dir = join(process.env.HERDR_APP_HOME || join(homedir(), ".config/herdr-app"), "data/sakamichi-agents/sessions");
   const file = lib?.sessionFile(dir, id); // null for anything but a local terminal id
   if (!file) return;
   const raw = JSON.parse(input);

@@ -1,9 +1,9 @@
 // node tests/lib.test.mjs
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { GROUPS, activeGroup, movedAvatars, assign, assignedMap, avatarMap, avatarSource, badge, forGroup, groupOf, isOfficial, officialPhotos, squareCrop, themeGroup, findMember, gauge, parseConfig, parseSession, sessionFile } from "../n46/mods/46-agents/lib.js";
+import { GROUPS, MEMBER_LABEL, activeGroup, movedAvatars, assign, assignedMap, avatarMap, avatarSource, badge, forGroup, groupOf, isOfficial, officialPhotos, squareCrop, themeGroup, findMember, gauge, labelMap, parseConfig, parseSession, sessionFile } from "../sakamichi/mods/sakamichi-agents/lib.js";
 
-const all = parseConfig(readFileSync(new URL("../n46/mods/46-agents/members.json", import.meta.url), "utf8"));
+const all = parseConfig(readFileSync(new URL("../sakamichi/mods/sakamichi-agents/members.json", import.meta.url), "utf8"));
 assert.equal(all.lang, "ja");
 for (const g of Object.keys(GROUPS)) assert.ok(all.members[g].length > 0, `no ${g} members`);
 const everyone = Object.values(all.members).flat();
@@ -81,7 +81,7 @@ assert.equal(avatarSource("", "/Users/me"), null);
 assert.equal(avatarSource(undefined, "/Users/me"), null);
 
 // shared avatar map keeps only our own folder
-assert.deepEqual(avatarMap({ a: "data/46-agents/avatars/1.jpg", b: "/etc/x.jpg", c: "data/46-agents/avatars/../../x", d: 5 }), { a: "data/46-agents/avatars/1.jpg" });
+assert.deepEqual(avatarMap({ a: "data/sakamichi-agents/avatars/1.jpg", b: "/etc/x.jpg", c: "data/sakamichi-agents/avatars/../../x", d: 5 }), { a: "data/sakamichi-agents/avatars/1.jpg" });
 assert.deepEqual(avatarMap(null), {});
 
 // square crop: face-focused (face 58% wide, centered, head room above), else top square
@@ -96,11 +96,11 @@ const corner = squareCrop("1600 900 0.0 0.0 0.1 0.2"); // face in a corner: clam
 assert.ok(corner.left === 0 && corner.top + corner.side <= 900);
 assert.equal(squareCrop("none"), null);
 assert.deepEqual(movedAvatars({ a: "data/n46-agents/avatars/1.jpg", b: "data/46-agents/avatars/2.jpg", c: 5 }),
-  { a: "data/46-agents/avatars/1.jpg", b: "data/46-agents/avatars/2.jpg", c: 5 });
-assert.deepEqual(avatarMap(movedAvatars({ a: "data/n46-agents/avatars/1.jpg" })), { a: "data/46-agents/avatars/1.jpg" });
-assert.ok(isOfficial("data/46-agents/avatars/official-1793711293470.jpg"));
-assert.ok(isOfficial("data/46-agents/avatars/official-1793711293470.png")); // no-sips fallback keeps .png
-assert.ok(!isOfficial("data/46-agents/avatars/1793711293470.jpg"));
+  { a: "data/sakamichi-agents/avatars/1.jpg", b: "data/sakamichi-agents/avatars/2.jpg", c: 5 });
+assert.deepEqual(avatarMap(movedAvatars({ a: "data/n46-agents/avatars/1.jpg" })), { a: "data/sakamichi-agents/avatars/1.jpg" });
+assert.ok(isOfficial("data/sakamichi-agents/avatars/official-1793711293470.jpg"));
+assert.ok(isOfficial("data/sakamichi-agents/avatars/official-1793711293470.png")); // no-sips fallback keeps .png
+assert.ok(!isOfficial("data/sakamichi-agents/avatars/1793711293470.jpg"));
 assert.equal(assign([ag("t1")], forGroup(parseConfig("{}"), "n46")).size, 0);
 // before members.json loads (or when it's broken) assign() hands out nothing, so remember() forgets no one
 assert.equal(forGroup(parseConfig("{}"), "n46").members.length, 0);
@@ -154,3 +154,10 @@ const sakura = officialPhotos('<li><img src="/images/14/8a5/x/400_320_102400.jpg
   '<img src="https://evil.example/b.jpg" alt="偽 物"></li>', "s46");
 assert.deepEqual([...sakura], [["山田桃実", "https://sakurazaka46.com/images/14/8a5/x/1000_1000_102400.jpg"]]);
 console.log("ok");
+
+// Two clients of one machine: the address has a `machine/` prefix on one only. Same hash,
+// and the terminal's label beats each client's own memory.
+assert.equal(assign([ag("t3x")], cfg).get("t3x").ja, assign([ag("mac/t3x")], cfg).get("mac/t3x").ja);
+const labels = labelMap([{ address: "mac/t3x", labels: { [MEMBER_LABEL]: "井上和" } }, { address: "t9", labels: {} }, null]);
+assert.deepEqual(labels, { "mac/t3x": "井上和" });
+assert.equal(assign([ag("mac/t3x")], cfg, { ...{ "mac/t3x": "遠藤さくら" }, ...labels }).get("mac/t3x").ja, "井上和");

@@ -13,14 +13,14 @@ You need the Herdr desktop app (`herdr-app` on your `PATH`) and Node.js for the 
    ./scripts/dev-sync.sh
    ```
 
-   This rsyncs every folder in `n46/mods/` into `~/.config/herdr-app/mods/` and runs `herdr-app check` on each one. Herdr reloads a copied mod by itself. Don't symlink mod folders: Herdr doesn't load their `svg()` icons or notice their edits.
+   This rsyncs every folder in `sakamichi/mods/` into `~/.config/herdr-app/mods/` and runs `herdr-app check` on each one. Herdr reloads a copied mod by itself. Don't symlink mod folders: Herdr doesn't load their `svg()` icons or notice their edits.
 3. Run the tests:
 
    ```sh
    node tests/lib.test.mjs
    ```
 
-   They cover the pure functions in `n46/mods/46-agents/lib.js` and print `ok`.
+   They cover the pure functions in `sakamichi/mods/sakamichi-agents/lib.js` and print `ok`.
 4. Look at the result:
 
    ```sh
@@ -64,13 +64,13 @@ Every commit message follows this shape:
 
 | Scope | Covers |
 | --- | --- |
-| `layout` | `n46/layouts/` |
-| `theme` | `n46/themes/` (`n46`, `s46`, `h46`) |
-| `agents` | The Members list in `n46/mods/46-agents/` |
+| `layout` | `sakamichi/layouts/` |
+| `theme` | `sakamichi/themes/` (`n46`, `s46`, `h46`) |
+| `agents` | The Members list in `sakamichi/mods/sakamichi-agents/` |
 | `settings` | The settings dialog: group switch, avatars, official import (`settings.js`) |
 | `statusline` | `statusline.mjs` and the session files it writes |
-| `pane` | `n46/mods/46-pane/` |
-| `tabs` | `n46/mods/46-tabs/` |
+| `pane` | `sakamichi/mods/sakamichi-pane/` |
+| `tabs` | `sakamichi/mods/sakamichi-tabs/` |
 | `members` | The rosters in `members.json` |
 | `scripts` | `scripts/` |
 | `docs` | Documentation only; usually with type `docs` |
@@ -108,12 +108,13 @@ A version number describes compatibility of what an installed copy and its owner
 
 | Interface | Examples |
 | --- | --- |
-| Installed names | Layout `46`, themes `n46`, `s46` and `h46`, mods `46-agents`, `46-pane` and `46-tabs` |
+| Installed names | Layout `sakamichi`, themes `n46`, `s46` and `h46`, mods `sakamichi-agents`, `sakamichi-pane` and `sakamichi-tabs` |
 | Config | The keys of `members.json`: `lang`, `pins`, `members.<group>[].ja/en/gen` |
-| Shared state | `46-agents.avatars`, `46-agents.assigned`, `46-agents.group` |
+| Shared state | `sakamichi-agents.avatars`, `sakamichi-agents.assigned`, `sakamichi-agents.group` |
+| Terminal label | `sakamichi.member` (member ja name) on every agent terminal |
 | Theme colours the layout uses | `gradient_top`, `gradient_bottom` in every theme's `colors` |
-| Data files | `data/46-agents/sessions/<terminal>.json`, `data/46-agents/avatars/` |
-| Status line command | `node ~/.config/herdr-app/mods/46-agents/statusline.mjs [your command]` |
+| Data files | `data/sakamichi-agents/sessions/<terminal>.json`, `data/sakamichi-agents/avatars/` |
+| Status line command | `node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs [your command]` |
 
 ### Which number to bump
 
@@ -129,7 +130,7 @@ Roster updates (members graduating or joining) are PATCH changes: `members.json`
 
 ## Documentation
 
-All documentation is written in English: `CONTRIBUTING.md`, `AGENT.md`, `n46/RECIPE.md`, code comments and commit messages. `README.md` is the only document with translations:
+All documentation is written in English: `CONTRIBUTING.md`, `AGENT.md`, `sakamichi/RECIPE.md`, code comments and commit messages. `README.md` is the only document with translations:
 
 | File | Role |
 | --- | --- |
@@ -148,7 +149,7 @@ A pull request is ready when:
 - [ ] Every commit follows Conventional Commits, and breaking changes carry `!` and a `BREAKING CHANGE:` footer.
 - [ ] `node tests/lib.test.mjs` prints `ok`, and new pure logic in `lib.js` has tests.
 - [ ] `./scripts/dev-sync.sh` passes `herdr-app check` for every mod, and `herdr-app status` shows no errors.
-- [ ] `n46/RECIPE.md` describes the change. Herdr's agents build the layout from it, so it must match the files.
+- [ ] `sakamichi/RECIPE.md` describes the change. Herdr's agents build the layout from it, so it must match the files.
 - [ ] Documentation is in English. When what people see or run changes, `README.md` is updated and both translations follow it.
 - [ ] Anything new that runs a program or uses the network is listed in each README's "What it runs on your machine" section and in the RECIPE.
 - [ ] No member photos or logos are committed.

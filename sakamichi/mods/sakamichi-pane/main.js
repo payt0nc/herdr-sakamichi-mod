@@ -1,7 +1,7 @@
 // 46's pane header: Herdr's `pane` header (cloned) plus the agent's member (乃木坂46, 櫻坂46 or 日向坂46),
-// "[icon] 愛宕心響 · Claude Code  ~/folder". The member comes from shared `46-agents.names`
-// (terminal address → the name the 46-agents list shows), falling back to the older
-// `46-agents.assigned` (terminal address → ja name). Props: { pane, terminal }.
+// "[icon] 愛宕心響 · Claude Code  ~/folder". The member comes from shared `sakamichi-agents.names`
+// (terminal address → the name the sakamichi-agents list shows), falling back to the older
+// `sakamichi-agents.assigned` (terminal address → ja name). Props: { pane, terminal }.
 
 import { View, div, svg, image } from "gpui-kit";
 import { h_flex } from "gpui-base";
@@ -25,7 +25,7 @@ export default class Pane extends View {
 
   member() {
     const t = props()?.terminal;
-    const name = shared("46-agents.names")?.[t] ?? shared("46-agents.assigned")?.[t];
+    const name = shared("sakamichi-agents.names")?.[t] ?? shared("sakamichi-agents.assigned")?.[t];
     return typeof name === "string" && name ? name : null;
   }
 
@@ -44,7 +44,7 @@ export default class Pane extends View {
         cx.stop_propagation();
         run(command, args);
       })
-      .child(svg(`mods/46-pane/${icon}.svg`).size(14));
+      .child(svg(`mods/sakamichi-pane/${icon}.svg`).size(14));
   }
 
   render(cx) {

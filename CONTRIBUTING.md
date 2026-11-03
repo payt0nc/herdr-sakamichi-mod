@@ -68,7 +68,7 @@ Every commit message follows this shape:
 | `theme` | `sakamichi/themes/` (`n46`, `s46`, `h46`) |
 | `agents` | The Members list in `sakamichi/mods/sakamichi-agents/` |
 | `settings` | The settings dialog: group switch, avatars, official import (`settings.js`) |
-| `statusline` | `statusline.mjs` and the session files it writes |
+| `statusline` | `statusline.mjs` and the `sakamichi.session` label it writes |
 | `pane` | `sakamichi/mods/sakamichi-pane/` |
 | `tabs` | `sakamichi/mods/sakamichi-tabs/` |
 | `members` | The rosters in `members.json` |
@@ -84,8 +84,8 @@ Mark a breaking change with `!` after the type or scope, and explain the migrati
 ```
 feat(statusline)!: rename the quota field to hp
 
-BREAKING CHANGE: session files use "hp" instead of "quota". Restart
-Claude Code sessions so statusline.mjs rewrites their files.
+BREAKING CHANGE: the sakamichi.session label uses "hp" instead of
+"quota". Restart Claude Code sessions so statusline.mjs rewrites it.
 ```
 
 ### Examples
@@ -93,7 +93,7 @@ Claude Code sessions so statusline.mjs rewrites their files.
 ```
 feat(agents): show the model name after the member name
 fix(settings): keep official photos refreshable when sips is missing
-perf(agents): reread only the session files that changed
+perf(statusline): skip label writes when nothing changed
 docs: add Japanese and Traditional Chinese READMEs
 chore(members): add the 7th generation to the roster
 ```
@@ -111,16 +111,16 @@ A version number describes compatibility of what an installed copy and its owner
 | Installed names | Layout `sakamichi`, themes `n46`, `s46` and `h46`, mods `sakamichi-agents`, `sakamichi-pane` and `sakamichi-tabs` |
 | Config | The keys of `members.json`: `lang`, `pins`, `members.<group>[].ja/en/gen` |
 | Shared state | `sakamichi-agents.avatars`, `sakamichi-agents.assigned`, `sakamichi-agents.group` |
-| Terminal label | `sakamichi.member` (member ja name) on every agent terminal |
+| Terminal labels | `sakamichi.member` (member ja name) on every agent terminal; `sakamichi.session` (JSON `updatedAt`, `context`, `quota`, `model`) on every Claude Code terminal |
 | Theme colours the layout uses | `gradient_top`, `gradient_bottom` in every theme's `colors` |
-| Data files | `data/sakamichi-agents/sessions/<terminal>.json`, `data/sakamichi-agents/avatars/` |
+| Data files | `data/sakamichi-agents/avatars/` |
 | Status line command | `node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs [your command]` |
 
 ### Which number to bump
 
 | Bump | When | Examples |
 | --- | --- | --- |
-| MAJOR | Any change to the public interface that makes an existing install or config stop working without manual steps | Renaming a mod, removing a `members.json` key, changing the session file format |
+| MAJOR | Any change to the public interface that makes an existing install or config stop working without manual steps | Renaming a mod, removing a `members.json` key, changing the `sakamichi.session` format |
 | MINOR | New features that keep the interface compatible | A new card element, a new optional `members.json` key, a new group |
 | PATCH | Fixes and performance work with no interface change | A crop fix, a faster reload, a roster correction |
 

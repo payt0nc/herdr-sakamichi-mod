@@ -205,8 +205,8 @@ layouts and the look switches with them.
     3–6), s46 30 (2–4), h46 26 (2–5). Pins work from any group. Every ja name is unique across all groups, because
     avatars are keyed by it.
   - `lib.js`: pure functions (`GROUPS`, `groupOf`, `themeGroup`, `activeGroup`, `parseConfig`, `forGroup`, `findMember`, `assign`,
-    `labelMap` (`terminals()` → address → the `MEMBER_LABEL` member), `OLD_NAMES`, `movedAvatars`,
-    `badge`, `squareCrop`, `isOfficial`, `avatarSource`, `avatarMap`, `officialPhotos`, `sessionFile`,
+    `labelMap` (`terminals()` → address → a label's value: `MEMBER_LABEL` by default, or `SESSION_LABEL`), `OLD_NAMES`, `movedAvatars`,
+    `badge`, `squareCrop`, `isOfficial`, `avatarSource`, `avatarMap`, `officialPhotos`,
     `parseSession`, `gauge`, `WORDS`), with no Herdr imports.
     `tests/lib.test.mjs` at the repo root checks them with `node`.
   - `main.js`: the list. Its `cfg` is `forGroup(members.json,
@@ -253,26 +253,22 @@ layouts and the look switches with them.
     - `100 - rate_limits.five_hour.used_percentage` becomes `quota` (HP).
     - `model.display_name` becomes `model` (at most 40 characters).
 
-    It writes `{updatedAt, context, quota, model}` (mode 600) to
-    `data/sakamichi-agents/sessions/<HC_TERMINAL_ID>.json`, using a temp file and
-    a rename. If the file already has the same numbers and model and is
-    under 60 s old, it skips the write, so the panel doesn't reread for
-    nothing. Its id rule and `pct()` repeat `lib.js` on purpose: importing
-    that ES module could fail on an older node, and a status line must
-    never break. Herdr sets `HC_TERMINAL_ID` in every terminal, and it equals
-    the agent's `address`. Any arguments name the person's own status line
+    It writes `{updatedAt, context, quota, model}` as JSON to its own
+    terminal's core label `sakamichi.session` (`hc label <HC_TERMINAL_ID>
+    sakamichi.session=<json>`), so every Herdr client connected to that
+    machine sees the numbers. If the label (read with `hc get --json`)
+    already has the same numbers and model and is under 60 s old, it skips
+    the write, so clients don't redraw for nothing. Each `hc` call has a 2 s
+    timeout. Its `pct()` and the label name repeat `lib.js` on purpose:
+    importing that ES module could fail on an older node, and a status line
+    must never break. Herdr sets `HC_TERMINAL_ID` in every terminal. Any arguments name the person's own status line
     command. It is run with the same stdin, and its stdout is printed, so
     an existing status line keeps working. The script never fails the
     session.
-  - **Sessions**: `main.js` reads every local agent's
-    `sessions/<address>.json` in parallel at start.
-    - Through `watchFolder`, it rereads only the files that changed (a
-      batch containing the folder means "all").
-    - It redraws only when the numbers changed.
-    - It runs `fs.mkdir` first, because the watch needs the folder to
-      exist.
-    - A 30 s timer rereads everything (new agents), restarts a stopped
-      watch and redraws (stale dimming).
+  - **Sessions**: each render takes `labelMap(terminals(), SESSION_LABEL)`
+    and a Claude Code card runs `parseSession` on its agent's value, for
+    local and remote agents alike. `terminals()` is live, so a new label
+    redraws by itself; a 30 s timer redraws for the stale dimming.
   - **Avatars** (`importAvatar`, run only when the person sets one):
     1. `avatarSource` accepts an `http(s)` URL, an absolute path or a `~/`
        path, and nothing else.
@@ -333,7 +329,8 @@ layouts and the look switches with them.
 - **Shipped mods used**: `workspace-chrome`, `spaces`, `files`,
   `changes`, `workspace-status`.
 - **Network and programs** (tell the person before installing): the list
-  runs only `hc label <terminal> sakamichi.member=<ja>`. Folders and deletions use `fs/promises`. When the
+  runs only `hc label <terminal> sakamichi.member=<ja>`, and `statusline.mjs`
+  only `hc get` and `hc label <terminal> sakamichi.session=<json>`. Folders and deletions use `fs/promises`. When the
   person sets an avatar, the settings run `cp` (or `curl` for a URL they
   typed), `sips`, `osascript` (its own `face.jxa`, face detection only)
   and `mv`. The shown group's official site (`www.nogizaka46.com`,
@@ -417,7 +414,8 @@ layouts and the look switches with them.
   installed, a Claude Code card shows HP and MP percentages that
   match Claude Code's own numbers, and they change as the session goes on.
 - `echo '{"context_window":{"remaining_percentage":62},"rate_limits":{"five_hour":{"used_percentage":35}}}' | HC_TERMINAL_ID=t1 node statusline.mjs`
-  writes `data/sakamichi-agents/sessions/t1.json` with `context: 62, quota: 65`.
+  sets terminal `t1`'s `sakamichi.session` label to JSON with `context: 62, quota: 65`
+  (`hc get t1 --json`). An agent on another machine shows its bars too.
 - On macOS, dropping a photo onto a member's row in the settings (or
   entering its path or URL) gives a 144×144 `data/sakamichi-agents/avatars/<ms>.jpg`
   with the face centered and the top of the head at the top edge. Every card for that member shows it. `リセット`

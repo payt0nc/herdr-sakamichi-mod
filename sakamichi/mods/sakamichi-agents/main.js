@@ -2,12 +2,11 @@
 // (乃木坂46, 櫻坂46 or 日向坂46; Japanese by default), with the avatar the person picked for that member in the settings dialog (settings.js).
 import { View, div, svg } from "gpui-kit";
 import { h_flex, v_flex } from "gpui-base";
-import { agents, appHome, hc, layout, openOverlay, props, readTextFile, run, setAgentOrder, setShared, settings, shared, terminals, theme, watchFolder } from "herdr";
+import { agents, appHome, hc, layout, openOverlay, props, readTextFile, run, setAgentOrder, setShared, settings, shared, terminals, theme } from "herdr";
 import * as fs from "fs/promises";
-import { AVATAR_PX, WORDS, activeGroup, movedAvatars, AVATAR_DIR, OLD_NAMES, MEMBER_LABEL, assign, assignedMap, findMember, forGroup, gauge, labelMap, nameOf, parseConfig, parseSession, sessionFile } from "./lib.js";
+import { AVATAR_PX, WORDS, activeGroup, movedAvatars, AVATAR_DIR, OLD_NAMES, MEMBER_LABEL, SESSION_LABEL, assign, assignedMap, findMember, forGroup, gauge, labelMap, nameOf, parseConfig, parseSession } from "./lib.js";
 import { ASSIGNED_KEY, AVATARS_KEY, GROUP_KEY, NAMES_KEY, Settings, avatarBox, avatars } from "./settings.js";
 
-const SESSION_DIR = `${appHome()}/data/sakamichi-agents/sessions`; // written by statusline.mjs
 const CONFIG = `${appHome()}/mods/sakamichi-agents/members.json`;
 
 const openSettings = (member) =>
@@ -66,14 +65,9 @@ export default class SakamichiAgents extends View {
     });
     // As an overlay (the ⚙ button, a right-click, or `mod.open sakamichi-agents`) it is the settings dialog.
     if (props()?.overlay) { this.settings = new Settings(this); return; }
-    const moving = migrate();
-    this.sessions = {}; // address → { updatedAt, context, quota, model }
-    this.reads = {}; // address → number of the latest read, so an older one can't win
-    this.readSessions(cx);
-    // The folder must exist for the watch to start on the very first run.
-    cx.spawn(async (cx) => { await moving; await fs.mkdir(SESSION_DIR, { recursive: true }).catch(() => {}); this.watchSessions(cx); });
-    // A full reread now and then: new agents, a stopped watch, and the "stale" dimming.
-    cx.timer.every(30000, (cx) => { this.readSessions(cx); this.watchSessions(cx); cx.notify(); });
+    migrate();
+    // terminals() is live, so a new SESSION_LABEL redraws by itself; this is for "stale" dimming.
+    cx.timer.every(30000, (cx) => cx.notify());
   }
 
   // Merged into what was remembered (`prev`), so an agent missing for a moment keeps its
@@ -137,7 +131,7 @@ export default class SakamichiAgents extends View {
 
   card(a, m, t, w, now, map, lang) {
     const frame = a.status === "blocked" ? t.blocked : a.focused ? t.accent : t.border;
-    const s = isClaude(a) ? this.sessions[a.address] ?? null : null;
+    const s = isClaude(a) ? parseSession(this.sessions[a.address]) : null;
     return h_flex()
       .id(`sakamichi-${a.address}`)
       .w_full().flex_none().p(10).gap(12).items_center().rounded(12)
@@ -162,35 +156,6 @@ export default class SakamichiAgents extends View {
           .when(s?.context != null, (el) => el.child(this.bar(w.mp, gauge(s.context, s.updatedAt, now), t.ansi12 ?? t.working, t))));
   }
 
-  // Numbers from statusline.mjs for the given addresses (default: every agent), in
-  // parallel; redraws only when something changed. Remote agents have no file: "—".
-  readSessions(cx, addresses = agents().map((a) => a.address)) {
-    const files = addresses.map((a) => [a, sessionFile(SESSION_DIR, a), (this.reads[a] = (this.reads[a] ?? 0) + 1)]).filter(([, f]) => f);
-    cx.spawn(async (cx) => {
-      const read = await Promise.all(files.map(async ([a, f, n]) => [a, parseSession(await readTextFile(f).catch(() => null)), n]));
-      const fresh = read.filter(([a, , n]) => this.reads[a] === n).map(([a, s]) => [a, s]);
-      const next = { ...this.sessions, ...Object.fromEntries(fresh) };
-      if (JSON.stringify(next) === JSON.stringify(this.sessions)) return;
-      this.sessions = next;
-      cx.notify();
-    });
-  }
-
-  // Rereads just the files that changed (a batch with the folder itself means "all").
-  watchSessions(cx) {
-    if (this.watching) return;
-    this.watching = true;
-    cx.spawn(async (cx) => {
-      for (;;) {
-        let changed;
-        try { changed = await watchFolder(SESSION_DIR); } catch { break; }
-        const names = changed.map((p) => p.split("/").pop()).filter((n) => /^[^.].*\.json$/.test(n));
-        this.readSessions(cx, changed.includes(SESSION_DIR) ? undefined : names.map((n) => n.slice(0, -5)));
-      }
-      this.watching = false;
-    });
-  }
-
   render(cx) {
     if (this.settings) return this.settings.render(cx);
     const t = theme();
@@ -203,7 +168,9 @@ export default class SakamichiAgents extends View {
     // sees it, and with two lists open the one that wrote last wins in both).
     // A terminal's label (set by any client) wins over this client's memory.
     const prev = assignedMap(shared(ASSIGNED_KEY));
-    const labels = labelMap(terminals());
+    const terms = terminals();
+    const labels = labelMap(terms);
+    this.sessions = labelMap(terms, SESSION_LABEL); // address → statusline.mjs's JSON, on every client
     const map = assign(list, cfg, { ...prev, ...labels });
     // Not before members.json has loaded (or when it is empty or broken): every name would be ja.
     if (cfg.known.length) { this.remember(map, prev, cfg); this.label(map, labels, cfg); }

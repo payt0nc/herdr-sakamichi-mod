@@ -97,10 +97,12 @@ export function assign(agents, cfg, prev) {
 // shared.json is per Herdr client, so each terminal also carries its member as a core label,
 // which every client connected to that machine sees. terminals() → address → ja name.
 export const MEMBER_LABEL = "sakamichi.member";
-export function labelMap(terms) {
+// The same for statusline.mjs's numbers: the label's value is the JSON parseSession reads.
+export const SESSION_LABEL = "sakamichi.session";
+export function labelMap(terms, key = MEMBER_LABEL) {
   const out = {};
   for (const x of Array.isArray(terms) ? terms : []) {
-    const v = x?.labels?.[MEMBER_LABEL];
+    const v = x?.labels?.[key];
     if (typeof x?.address === "string" && typeof v === "string" && v) out[x.address] = v;
   }
   return out;
@@ -144,13 +146,10 @@ export function squareCrop(text) {
 // without touching pictures the person chose.
 export const isOfficial = (path) => typeof path === "string" && /\/official-\d+\.\w+$/.test(path);
 
-// Context left, 5-hour quota left and model, written by statusline.mjs per local terminal.
+// Context left, 5-hour quota left and model, written by statusline.mjs as SESSION_LABEL.
+// ponytail: updatedAt is the agent machine's clock; skew between machines shifts "stale".
 export const STALE_SECONDS = 600;
 const pct = (v) => (typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 100 ? v : null);
-
-// Only local terminal ids (t1y), never paths; remote ones (vps/t7) have no file here.
-export const sessionFile = (dir, address) =>
-  typeof address === "string" && /^[A-Za-z0-9][A-Za-z0-9_-]*$/.test(address) ? `${dir}/${address}.json` : null;
 
 export function parseSession(text) {
   let d;

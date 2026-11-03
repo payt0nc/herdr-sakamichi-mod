@@ -1,7 +1,7 @@
 // node tests/lib.test.mjs
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { GROUPS, MEMBER_LABEL, activeGroup, movedAvatars, assign, assignedMap, avatarMap, avatarSource, badge, forGroup, groupOf, isOfficial, officialPhotos, squareCrop, themeGroup, findMember, gauge, labelMap, parseConfig, parseSession, sessionFile } from "../sakamichi/mods/sakamichi-agents/lib.js";
+import { GROUPS, MEMBER_LABEL, activeGroup, movedAvatars, assign, assignedMap, avatarMap, avatarSource, badge, forGroup, groupOf, isOfficial, officialPhotos, squareCrop, themeGroup, findMember, gauge, labelMap, parseConfig, parseSession, SESSION_LABEL } from "../sakamichi/mods/sakamichi-agents/lib.js";
 
 const all = parseConfig(readFileSync(new URL("../sakamichi/mods/sakamichi-agents/members.json", import.meta.url), "utf8"));
 assert.equal(all.lang, "ja");
@@ -124,9 +124,7 @@ const nagi = findMember("井上和", cfg.members);
 assert.equal(badge(nagi, "ja"), "井");
 assert.equal(badge(nagi, "en"), "NI");
 // session cache
-assert.equal(sessionFile("/d", "t1y"), "/d/t1y.json");
-assert.equal(sessionFile("/d", "vps/t7"), null);
-assert.equal(sessionFile("/d", "../x"), null);
+assert.deepEqual(labelMap([{ address: "mac/t3x", labels: { [SESSION_LABEL]: '{"updatedAt":1}', [MEMBER_LABEL]: "井上和" } }], SESSION_LABEL), { "mac/t3x": '{"updatedAt":1}' });
 assert.deepEqual(parseSession('{"updatedAt":100,"context":62,"quota":"x"}'), { updatedAt: 100, context: 62, quota: null, model: null });
 assert.equal(parseSession('{"updatedAt":100,"model":" Opus 5.5 "}').model, "Opus 5.5");
 assert.equal(parseSession('{"updatedAt":100,"model":5}').model, null);

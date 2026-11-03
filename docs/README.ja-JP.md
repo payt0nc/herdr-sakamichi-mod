@@ -154,7 +154,7 @@ rm -f "$H/layouts/sakamichi.json" "$H/layouts/sakamichi.svg" "$H/themes/n46.json
 - メンバー一覧、タブバー、ペインのヘッダーは、`members.json` と `~/.config/herdr-app/data/sakamichi-agents/` 以下のファイルを読みます。メンバー一覧はさらに `hc label` を実行し、各エージェントのメンバーをターミナルのラベル（`sakamichi.member`）に保存します。そのマシンに接続したどの Herdr でも同じメンバーが表示されます。
 - アバターを設定するときは `cp`（URL の場合は `curl`）、`sips`、顔検出用に mod 同梱の `face.jxa` を `osascript` で、そして `mv` を実行します。
 - ネットワークを使うのは、入力したアバターの URL と **公式サイトの写真を取り込む** のときだけです。後者は表示中のグループの公式サイト（`www.nogizaka46.com`、`sakurazaka46.com`、または `www.hinatazaka46.com` と `cdn.hinatazaka46.com`）に接続します。
-- `statusline.mjs` はターミナルごとにモデル名と 2 つのパーセンテージを保存します。認証情報は読みません。
+- `statusline.mjs` は `hc label` でモデル名と 2 つのパーセンテージをターミナルのラベル `sakamichi.session` に保存します。そのマシンに接続したすべての Herdr で HP と MP のバーが表示されます。認証情報は読みません。
 - キー設定は変更しません。
 
 アバターには、使用する権利のある画像を使ってください。

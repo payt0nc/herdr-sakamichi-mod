@@ -154,7 +154,7 @@ rm -f "$H/layouts/sakamichi.json" "$H/layouts/sakamichi.svg" "$H/themes/n46.json
 - 成員清單、分頁列和 pane 標題列只讀 `members.json` 與 `~/.config/herdr-app/data/sakamichi-agents/` 底下的檔案。成員清單另外會執行 `hc label`，把每個 agent 的成員存在它的終端機標籤（`sakamichi.member`）上，所以連到那台機器的每個 Herdr 都顯示同一位成員。
 - 設定頭像時會執行 `cp`（輸入網址時改用 `curl`）、`sips`、用 `osascript` 跑 mod 內附的 `face.jxa` 做臉部偵測，以及 `mv`。
 - 只有你輸入的頭像網址和 **公式サイトの写真を取り込む** 會用到網路；後者連線到顯示中團體的官網：`www.nogizaka46.com`、`sakurazaka46.com`，或 `www.hinatazaka46.com` 與 `cdn.hinatazaka46.com`。
-- `statusline.mjs` 依終端機存下模型名稱和兩個百分比，不讀任何憑證。
+- `statusline.mjs` 用 `hc label` 把模型名稱和兩個百分比存在終端機的標籤 `sakamichi.session`，連到那台機器的每個 Herdr 都會顯示 HP 和 MP 條。不讀任何憑證。
 - 不會改動你的按鍵設定。
 
 請使用你有權使用的頭像圖片。

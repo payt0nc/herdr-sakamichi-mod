@@ -1,23 +1,19 @@
 #!/usr/bin/env node
 // Claude Code statusLine for sakamichi-agents. Saves this terminal's model name, context left (MP)
-// and 5-hour quota left (HP) to ~/.config/herdr-app/data/sakamichi-agents/sessions/<terminal>.json,
-// then hands the same input to your own status line, if you name it, and prints its output:
+// and 5-hour quota left (HP) as its core label sakamichi.session (`hc label`), which every
+// Herdr client connected to this machine sees, then hands the same input to your own status
+// line, if you name it, and prints its output:
 //   node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs ccstatusline
 import { spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
-// lib.js sits next to this file. Loaded so a failure (an older node that can't load it)
-// only skips saving: a status line must never break.
-const lib = await import("./lib.js").catch(() => null);
+import { readFileSync } from "node:fs";
 
+const LABEL = "sakamichi.session"; // SESSION_LABEL in lib.js
 const pct = (v) => (typeof v === "number" && v >= 0 && v <= 100 ? Math.round(v) : null);
+const hc = (...args) => spawnSync("hc", args, { encoding: "utf8", timeout: 2000 });
 
 function save(input) {
-  const id = process.env.HC_TERMINAL_ID ?? ""; // set by Herdr in every terminal
-  const dir = join(process.env.HERDR_APP_HOME || join(homedir(), ".config/herdr-app"), "data/sakamichi-agents/sessions");
-  const file = lib?.sessionFile(dir, id); // null for anything but a local terminal id
-  if (!file) return;
+  const id = process.env.HC_TERMINAL_ID; // set by Herdr in every terminal
+  if (!id) return;
   const raw = JSON.parse(input);
   const used = pct(raw?.rate_limits?.five_hour?.used_percentage);
   const now = Math.floor(Date.now() / 1000);
@@ -27,15 +23,12 @@ function save(input) {
     quota: used === null ? null : 100 - used,
     model: typeof raw?.model?.display_name === "string" ? raw.model.display_name.slice(0, 40) : null,
   };
-  // Unchanged and fresh: skip the write, so the panel doesn't reread for nothing.
+  // Unchanged and fresh: skip the write, so every client doesn't redraw for nothing.
   try {
-    const old = JSON.parse(readFileSync(file, "utf8"));
+    const old = JSON.parse(JSON.parse(hc("get", id, "--json").stdout).labels[LABEL]);
     if (now - old.updatedAt < 60 && old.context === data.context && old.quota === data.quota && old.model === data.model) return;
   } catch {}
-  mkdirSync(dir, { recursive: true });
-  const tmp = join(dir, `.${id}.${process.pid}.tmp`);
-  writeFileSync(tmp, JSON.stringify(data), { mode: 0o600 });
-  renameSync(tmp, file);
+  hc("label", id, `${LABEL}=${JSON.stringify(data)}`);
 }
 
 let input = "";

@@ -11,10 +11,10 @@ herdr-sakamichi-mod is a layout package for the Herdr desktop app: one layout, t
 | `sakamichi/layouts/sakamichi.json` | The layout: a clone of Herdr's `main` with the `n46` theme, `sakamichi-agents`, `sakamichi-pane`, and a gradient from the theme colours `raised` → `canvas` |
 | `sakamichi/layouts/sakamichi.svg` | The picture Herdr's settings show for the layout |
 | `sakamichi/themes/n46.json`, `s46.json`, `h46.json` | One theme per group (purple, pink, sky blue): terminal colours (`ansi`) and panel overrides (`colors`) |
-| `sakamichi/mods/sakamichi-agents/main.js` | The Members list: cards, HP / MP bars, status animation, session file reading, the `sakamichi.member` terminal label, the move from the old `46-agents` / `n46-agents` names |
+| `sakamichi/mods/sakamichi-agents/main.js` | The Members list: cards, HP / MP bars, status animation, the `sakamichi.member` and `sakamichi.session` terminal labels, the move from the old `46-agents` / `n46-agents` names |
 | `sakamichi/mods/sakamichi-agents/settings.js` | The settings dialog (group switch, avatars), avatar import, official photo import per group, `avatarBox` |
 | `sakamichi/mods/sakamichi-agents/lib.js` | Pure functions with no Herdr imports, including `GROUPS` (names, official API, photo host per group); the only file the tests load |
-| `sakamichi/mods/sakamichi-agents/statusline.mjs` | Claude Code status line: writes model, context left and quota left per terminal |
+| `sakamichi/mods/sakamichi-agents/statusline.mjs` | Claude Code status line: writes model, context left and quota left to its terminal's `sakamichi.session` label |
 | `sakamichi/mods/sakamichi-agents/disc.svg`, `zzz.svg`, `message.svg`, `check.svg` | Status icons (working, idle, blocked, done), tinted with the status colour |
 | `sakamichi/mods/sakamichi-agents/face.jxa` | macOS Vision face detection, run with `osascript -l JavaScript` |
 | `sakamichi/mods/sakamichi-agents/members.json` | One roster per group (`members.n46`, `.s46`, `.h46`) and person settings (`lang`, `pins`) |
@@ -59,7 +59,6 @@ These come from Herdr's runtime; breaking one fails silently or makes the app sl
 | `setShared` re-renders every mod | `remember()` writes `sakamichi-agents.assigned` only when the assignment changed |
 | `exec` stops after 30 s, and mods have no file picker | Avatars come from drag and drop or a typed path or URL |
 | Esc closes the top dialog by itself | The settings dialog has no Esc handler |
-| `watchFolder` needs the folder to exist | `main.js` creates `data/sakamichi-agents/sessions/` before watching |
 
 ## Code conventions
 
@@ -67,7 +66,7 @@ These come from Herdr's runtime; breaking one fails silently or makes the app sl
 - Use theme colors (`theme().accent`, `t.working`, …) instead of hex in mods, so the layout follows theme changes.
 - Draw avatars only through `avatarBox` in `settings.js`; save or remove them only through `store`.
 - Use `fs/promises` for folders and deletions and `fetch` for text; `exec` only for `cp`, `mv`, `curl` (image downloads), `sips` and `osascript`.
-- `statusline.mjs` repeats the id rule and `pct()` from `lib.js` on purpose: it must run on any Node.js and never break the person's status line.
+- `statusline.mjs` repeats `pct()` and the `sakamichi.session` name from `lib.js` on purpose: it must run on any Node.js and never break the person's status line.
 - Changing anything in CONTRIBUTING.md's public interface table is a breaking change.
 - A new group needs an entry in `GROUPS`, a roster in `members.json`, a `themes/<key>.json`, and a parser case in `officialPhotos`. Member `ja` names must stay unique across all groups, because avatars are keyed by them.
 - Never commit member photos, logos, or files Herdr writes into mod folders (`gpui-kit.d.ts`, `jsconfig.json`; both are in `.gitignore`).

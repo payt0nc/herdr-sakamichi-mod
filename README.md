@@ -154,7 +154,7 @@ Then remove the `statusLine` entry from `~/.claude/settings.json` if you added i
 - The Members list, tab bar and pane headers only read `members.json` and files under `~/.config/herdr-app/data/sakamichi-agents/`. The Members list also runs `hc label` to store each agent's member on its terminal (label `sakamichi.member`), so every Herdr connected to that machine shows the same member.
 - Setting an avatar runs `cp` (or `curl` for a URL you entered), `sips`, `osascript` with the mod's own `face.jxa` for face detection, and `mv`.
 - The network is used only for an avatar URL you entered and for **公式サイトの写真を取り込む**, which contacts the shown group's site: `www.nogizaka46.com`, `sakurazaka46.com`, or `www.hinatazaka46.com` and `cdn.hinatazaka46.com`.
-- `statusline.mjs` saves the model name and the two percentages per terminal. It reads no credentials.
+- `statusline.mjs` runs `hc label` to save the model name and the two percentages on its terminal (label `sakamichi.session`), so every Herdr connected to that machine shows the HP and MP bars. It reads no credentials.
 - Nothing changes your keys.
 
 Use avatar images you have the right to use.

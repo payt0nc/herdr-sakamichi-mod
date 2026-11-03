@@ -1,6 +1,6 @@
-// Pure functions for 46-agents: no herdr / gpui-kit imports, so node can test them.
+// Pure functions for sakamichi-agents: no herdr / gpui-kit imports, so node can test them.
 
-// The three groups. The shown one is shared `46-agents.group`; its theme is themes/<key>.json.
+// The three groups. The shown one is shared `sakamichi-agents.group`; its theme is themes/<key>.json.
 // `api` is where the official photos come from: n46 JSONP, h46 JSON, s46 an HTML page.
 export const GROUPS = {
   n46: { ja: "乃木坂46", en: "Nogizaka46", api: "https://www.nogizaka46.com/s/n46/api/list/member", host: "https://www.nogizaka46.com/" },
@@ -16,7 +16,7 @@ export function themeGroup(s) {
   for (const name of [s?.theme_dark, s?.theme_light]) if (Object.hasOwn(GROUPS, name)) return name;
   return null;
 }
-// The shown group: the theme's, else the one picked last (shared `46-agents.group`), else n46.
+// The shown group: the theme's, else the one picked last (shared `sakamichi-agents.group`), else n46.
 export const activeGroup = (s, saved) => themeGroup(s) ?? groupOf(saved);
 
 // members.json → { lang, pins, members: { n46: [...], s46: [...], h46: [...] } }, dropping
@@ -84,11 +84,26 @@ export function assign(agents, cfg, prev) {
   const n = cfg.members.length;
   for (const a of agents) {
     if (out.has(a.address) || n === 0) continue;
-    const start = [...a.address].reduce((s, c) => s + c.codePointAt(0), 0);
+    // Hashed without the `machine/` prefix, which only some clients see.
+    const start = [...a.address.split("/").pop()].reduce((s, c) => s + c.codePointAt(0), 0);
     const ring = Array.from({ length: n }, (_, i) => cfg.members[(start + i) % n]);
     const m = ring.find((x) => !used.has(x.ja)) ?? findMember(prev[a.address], known) ?? ring[0];
     out.set(a.address, m);
     used.add(m.ja);
+  }
+  return out;
+}
+
+// shared.json is per Herdr client, so each terminal also carries its member as a core label,
+// which every client connected to that machine sees. terminals() → address → ja name.
+export const MEMBER_LABEL = "sakamichi.member";
+// The same for statusline.mjs's numbers: the label's value is the JSON parseSession reads.
+export const SESSION_LABEL = "sakamichi.session";
+export function labelMap(terms, key = MEMBER_LABEL) {
+  const out = {};
+  for (const x of Array.isArray(terms) ? terms : []) {
+    const v = x?.labels?.[key];
+    if (typeof x?.address === "string" && typeof v === "string" && v) out[x.address] = v;
   }
   return out;
 }
@@ -131,13 +146,10 @@ export function squareCrop(text) {
 // without touching pictures the person chose.
 export const isOfficial = (path) => typeof path === "string" && /\/official-\d+\.\w+$/.test(path);
 
-// Context left, 5-hour quota left and model, written by statusline.mjs per local terminal.
+// Context left, 5-hour quota left and model, written by statusline.mjs as SESSION_LABEL.
+// ponytail: updatedAt is the agent machine's clock; skew between machines shifts "stale".
 export const STALE_SECONDS = 600;
 const pct = (v) => (typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 100 ? v : null);
-
-// Only local terminal ids (t1y), never paths; remote ones (vps/t7) have no file here.
-export const sessionFile = (dir, address) =>
-  typeof address === "string" && /^[A-Za-z0-9][A-Za-z0-9_-]*$/.test(address) ? `${dir}/${address}.json` : null;
 
 export function parseSession(text) {
   let d;
@@ -204,13 +216,13 @@ export function officialPhotos(text, group = "n46") {
 
 // The shared avatars map (member ja name → home-relative image path), keeping only
 // paths inside our own avatars folder.
-export const AVATAR_DIR = "data/46-agents/avatars";
-// ponytail: the mod was named n46-agents until November 2026. Drop this (and migrate() in
-// main.js) once old installs have moved.
-export const OLD_AVATAR_DIR = "data/n46-agents/avatars";
+export const AVATAR_DIR = "data/sakamichi-agents/avatars";
+// ponytail: the mod was named n46-agents, then 46-agents, until November 2026. Drop these
+// (and migrate() in main.js) once old installs have moved. Newest old name first.
+export const OLD_NAMES = ["46-agents", "n46-agents"];
 export const movedAvatars = (map) =>
   Object.fromEntries(Object.entries(map ?? {}).map(([k, p]) =>
-    [k, typeof p === "string" && p.startsWith(`${OLD_AVATAR_DIR}/`) ? AVATAR_DIR + p.slice(OLD_AVATAR_DIR.length) : p]));
+    [k, typeof p === "string" ? p.replace(/^data\/n?46-agents\/avatars\//, `${AVATAR_DIR}/`) : p]));
 export function avatarMap(value) {
   const out = {};
   if (value && typeof value === "object" && !Array.isArray(value)) {

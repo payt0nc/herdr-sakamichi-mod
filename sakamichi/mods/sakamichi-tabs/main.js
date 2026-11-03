@@ -1,8 +1,8 @@
-// 46's tab bar: Herdr's `tabs` (cloned). Every tab shows "{seq} {program icon} {name}";
+// The sakamichi layout's tab bar: Herdr's `tabs` (cloned). Every tab shows "{seq} {program icon} {name}";
 // a tab with agents shows each agent's icon and member instead, in pane order, so a split
 // with two agents reads `1 [Claude] 川﨑桜 [Claude] 奥田いろは`; a renamed tab keeps its name in
-// front: `1 fix login [Claude] 川﨑桜`. Members come from shared `46-agents.names` (terminal
-// address → the name the 46-agents list shows), falling back to the older `46-agents.assigned`
+// front: `1 fix login [Claude] 川﨑桜`. Members come from shared `sakamichi-agents.names` (terminal
+// address → the name the sakamichi-agents list shows), falling back to the older `sakamichi-agents.assigned`
 // (terminal address → ja name).
 import { View, div, svg, image } from "gpui-kit";
 import { h_flex } from "gpui-base";
@@ -58,7 +58,7 @@ export default class Tabs extends View {
     const stop = (_e, cx) => cx.stop_propagation();
     const button = (id, label, action) => div().id(id).size(26).flex_none().flex().items_center().justify_center().rounded(6).text_color(t.dim).hover(s => s.bg(t.hover).text_color(t.foreground))
       .on_mouse_down("left", stop).on_click(action).child(label);
-    const names = shared("46-agents.names") ?? {}, assigned = shared("46-agents.assigned") ?? {};
+    const names = shared("sakamichi-agents.names") ?? {}, assigned = shared("sakamichi-agents.assigned") ?? {};
     const member = (terminal) => { const n = names[terminal] ?? assigned[terminal]; return typeof n === "string" && n ? n : null; };
     const icon = (program) => program.tint ? svg(program.icon).size(14).flex_none().text_color(t.muted) : image(program.icon).size(14).flex_none();
     const item = (c, i) => {
@@ -116,8 +116,8 @@ export default class Tabs extends View {
       .child(button("tab-new", "+", () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 })))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
-      .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/46-tabs/win-min.svg").size(16) : "−", () => run("window.minimize")))
-        .child(button("maximize", w.platform === "windows" ? svg(`mods/46-tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(16) : "□", () => run("window.maximize")))
-        .child(button("close-window", w.platform === "windows" ? svg("mods/46-tabs/win-close.svg").size(16) : svg("mods/pane/close.svg").size(13), () => run("window.close"))));
+      .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/sakamichi-tabs/win-min.svg").size(16) : "−", () => run("window.minimize")))
+        .child(button("maximize", w.platform === "windows" ? svg(`mods/sakamichi-tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(16) : "□", () => run("window.maximize")))
+        .child(button("close-window", w.platform === "windows" ? svg("mods/sakamichi-tabs/win-close.svg").size(16) : svg("mods/pane/close.svg").size(13), () => run("window.close"))));
   }
 }

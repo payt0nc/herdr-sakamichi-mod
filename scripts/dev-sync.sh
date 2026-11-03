@@ -4,7 +4,7 @@
 set -e
 H="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
 cd "$(dirname "$0")/.."
-for m in n46/mods/*/; do
+for m in sakamichi/mods/*/; do
   name=$(basename "$m")
   rsync -a --delete --exclude gpui-kit.d.ts --exclude jsconfig.json "$m" "$H/mods/$name/"
   herdr-app check "$H/mods/$name"

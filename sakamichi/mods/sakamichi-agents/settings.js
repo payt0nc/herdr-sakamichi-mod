@@ -7,12 +7,12 @@ import { agents, appHome, closeOverlay, exec, home, props, run, settings, setSha
 import * as fs from "fs/promises";
 import { AVATAR_DIR, AVATAR_OUT, GROUPS, WORDS, avatarMap, assignedMap, avatarSource, badge, isOfficial, nameOf, officialPhotos, squareCrop, themeGroup } from "./lib.js";
 
-export const AVATARS_KEY = "46-agents.avatars"; // shared: member ja name → image path
-export const ASSIGNED_KEY = "46-agents.assigned"; // shared: agent address → member ja name
-export const NAMES_KEY = "46-agents.names"; // shared: agent address → the name its card shows (same keys)
-export const GROUP_KEY = "46-agents.group"; // shared: "n46" | "s46" | "h46"
+export const AVATARS_KEY = "sakamichi-agents.avatars"; // shared: member ja name → image path
+export const ASSIGNED_KEY = "sakamichi-agents.assigned"; // shared: agent address → member ja name
+export const NAMES_KEY = "sakamichi-agents.names"; // shared: agent address → the name its card shows (same keys)
+export const GROUP_KEY = "sakamichi-agents.group"; // shared: "n46" | "s46" | "h46"
 
-const FACE_SCRIPT = `${appHome()}/mods/46-agents/face.jxa`;
+const FACE_SCRIPT = `${appHome()}/mods/sakamichi-agents/face.jxa`;
 const IMPORTS_AT_ONCE = 4;
 const ok = async (cmd, args) => (await exec(cmd, args).catch(() => ({ code: 1 }))).code === 0;
 const rm = (...rel) => Promise.all(rel.map((p) => fs.unlink(`${appHome()}/${p}`).catch(() => {})));
@@ -51,7 +51,7 @@ export async function importAvatar(source, prefix = "") {
   await fs.mkdir(dir, { recursive: true }).catch(() => {});
   try {
     const got = source.url
-      ? await ok("curl", ["-fsSL", "--proto", "=http,https", "--max-time", "25", "--max-filesize", "20000000", "-A", "herdr-46-agents", "-o", part, source.url])
+      ? await ok("curl", ["-fsSL", "--proto", "=http,https", "--max-time", "25", "--max-filesize", "20000000", "-A", "herdr-sakamichi-agents", "-o", part, source.url])
       : await ok("cp", ["-f", source.file, part]);
     if (!got) return null;
     const jpeg = await exec("sips", ["-s", "format", "jpeg", part, "--out", part]).catch(() => null);
@@ -158,7 +158,7 @@ export class Settings {
     cx.notify();
   }
 
-  // Shows another group: its members get handed out to the agents, and on the 46 layout (or
+  // Shows another group: its members get handed out to the agents, and on the sakamichi layout (or
   // one already on a group's theme, which the group follows) its theme applies. `app.theme`
   // fills only the half of the theme's lightness, the dark one for our themes; there is no
   // call for the light half, so in light mode the colours stay as the layout file has them.
@@ -168,7 +168,7 @@ export class Settings {
     this.armed = false;
     this.message = null;
     setShared(GROUP_KEY, group);
-    if (shared("layout") === "46" || themeGroup(settings())) run("app.theme", { name: group });
+    if (shared("layout") === "sakamichi" || themeGroup(settings())) run("app.theme", { name: group });
     cx.notify();
   }
 
@@ -217,7 +217,7 @@ export class Settings {
     const members = [...others, ...[...cfg.members].sort((a, b) => (usedBy[b.ja] ? 1 : 0) - (usedBy[a.ja] ? 1 : 0))];
     const sel = members.find((m) => m.ja === this.selected) ?? null;
 
-    return v_flex().id("n46-settings")
+    return v_flex().id("sakamichi-settings")
       .on_drop((e, cx) => this.apply(this.selected, e.paths?.[0], cx))
       .size_full().min_h(0).p(18).gap(10).bg(t.popover).text_color(t.foreground)
       .child(h_flex().items_center().gap(8)

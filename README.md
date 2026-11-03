@@ -34,7 +34,7 @@ Names are in Japanese by default; English is one setting away.
 
 The quickest way is to ask your agent inside Herdr:
 
-> Read ~/.config/herdr-app/AGENTS.md, then add the layout from https://github.com/payt0nc/herdr-sakamichi-mod (folder `n46`). Read n46/RECIPE.md first.
+> Read ~/.config/herdr-app/AGENTS.md, then add the layout from https://github.com/payt0nc/herdr-sakamichi-mod (folder `sakamichi`). Read sakamichi/RECIPE.md first.
 
 To install by hand:
 
@@ -48,21 +48,21 @@ To install by hand:
 
    ```sh
    H=~/.config/herdr-app
-   cp n46/layouts/46.json n46/layouts/46.svg "$H/layouts/"
-   cp n46/themes/n46.json n46/themes/s46.json n46/themes/h46.json "$H/themes/"
-   cp -R n46/mods/46-agents n46/mods/46-pane n46/mods/46-tabs "$H/mods/"
+   cp sakamichi/layouts/sakamichi.json sakamichi/layouts/sakamichi.svg "$H/layouts/"
+   cp sakamichi/themes/n46.json sakamichi/themes/s46.json sakamichi/themes/h46.json "$H/themes/"
+   cp -R sakamichi/mods/sakamichi-agents sakamichi/mods/sakamichi-pane sakamichi/mods/sakamichi-tabs "$H/mods/"
    ```
 
 3. Check the mods. Each prints `check passed`.
 
    ```sh
-   for m in 46-agents 46-pane 46-tabs; do herdr-app check "$H/mods/$m"; done
+   for m in sakamichi-agents sakamichi-pane sakamichi-tabs; do herdr-app check "$H/mods/$m"; done
    ```
 
 4. Switch to the layout:
 
    ```sh
-   herdr-app do layout.switch '{"name":"46"}'
+   herdr-app do layout.switch '{"name":"sakamichi"}'
    ```
 
 If you already have files with these names, rename the new ones instead of overwriting yours. `ctrl-shift-l` switches back to your own layout at any time.
@@ -74,18 +74,18 @@ The gauges read Claude Code's status line. Add this to `~/.claude/settings.json`
 ```json
 "statusLine": {
   "type": "command",
-  "command": "node ~/.config/herdr-app/mods/46-agents/statusline.mjs",
+  "command": "node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs",
   "refreshInterval": 10
 }
 ```
 
-Already have a status line? Put its command after the script, for example `node ~/.config/herdr-app/mods/46-agents/statusline.mjs ccstatusline`. It keeps drawing as before.
+Already have a status line? Put its command after the script, for example `node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs ccstatusline`. It keeps drawing as before.
 
 ## Use
 
 ### Members and status
 
-Each agent gets a free member of the shown group at random and keeps her across restarts. Two agents share a member only after the whole group is taken (乃木坂46 33, 櫻坂46 30, 日向坂46 26). Agents you pin in Herdr come first. Click a card to jump to its agent.
+Each agent gets a free member of the shown group at random and keeps her across restarts. Every Herdr connected to the same machine shows the same member for an agent. Two agents share a member only after the whole group is taken (乃木坂46 33, 櫻坂46 30, 日向坂46 26). Agents you pin in Herdr come first. Click a card to jump to its agent.
 
 | Status (`ja` / `en`) | Icon | Card |
 | --- | --- | --- |
@@ -118,7 +118,7 @@ Avatars are saved at 144×144. Members of another group who still stand for an a
 
 ### Configuration
 
-`~/.config/herdr-app/mods/46-agents/members.json`:
+`~/.config/herdr-app/mods/sakamichi-agents/members.json`:
 
 | Key | Effect |
 | --- | --- |
@@ -128,32 +128,33 @@ Avatars are saved at 144×144. Members of another group who still stand for an a
 
 Updating the mod overwrites `members.json`, so save your `pins` first.
 
-## Upgrading from the `n46-*` names
+## Upgrading from the `46-*` or `n46-*` names
 
-Until November 2026 the layout was `n46` and the mods `n46-agents`, `n46-pane` and `n46-tabs`. After installing the new files:
+Until November 2026 the layout was `46` and the mods `46-agents`, `46-pane` and `46-tabs` (before that, `n46` and `n46-agents`, `n46-pane`, `n46-tabs`). After installing the new files:
 
-1. Switch to the `46` layout. On its first start, `46-agents` copies your members, group and avatars from the old names.
-2. Point the `statusLine` command in `~/.claude/settings.json` at `mods/46-agents/statusline.mjs`.
-3. Delete the old files with the second `rm` line under Uninstall.
+1. Switch to the `sakamichi` layout. On its first start, `sakamichi-agents` copies your members, group and avatars from the old names.
+2. Point the `statusLine` command in `~/.claude/settings.json` at `mods/sakamichi-agents/statusline.mjs`.
+3. Delete the old files with the two `# names before` / `# the first names` `rm` lines under Uninstall.
 
 ## Uninstall
 
 ```sh
 H=~/.config/herdr-app
 herdr-app do layout.switch '{"name":"main"}'
-rm -rf "$H/mods/46-agents" "$H/mods/46-pane" "$H/mods/46-tabs" "$H/data/46-agents"
-rm -rf "$H/mods/n46-agents" "$H/mods/n46-pane" "$H/mods/n46-tabs" "$H/data/n46-agents" "$H/layouts/n46.json" "$H/layouts/n46.svg" # names before Nov 2026
-rm -f "$H/layouts/46.json" "$H/layouts/46.svg" "$H/themes/n46.json" "$H/themes/s46.json" "$H/themes/h46.json"
+rm -rf "$H/mods/sakamichi-agents" "$H/mods/sakamichi-pane" "$H/mods/sakamichi-tabs" "$H/data/sakamichi-agents"
+rm -rf "$H/mods/46-agents" "$H/mods/46-pane" "$H/mods/46-tabs" "$H/data/46-agents" "$H/layouts/46.json" "$H/layouts/46.svg" # names before Nov 2026
+rm -rf "$H/mods/n46-agents" "$H/mods/n46-pane" "$H/mods/n46-tabs" "$H/data/n46-agents" "$H/layouts/n46.json" "$H/layouts/n46.svg" # the first names
+rm -f "$H/layouts/sakamichi.json" "$H/layouts/sakamichi.svg" "$H/themes/n46.json" "$H/themes/s46.json" "$H/themes/h46.json"
 ```
 
 Then remove the `statusLine` entry from `~/.claude/settings.json` if you added it.
 
 ## What it runs on your machine
 
-- The Members list, tab bar and pane headers only read `members.json` and files under `~/.config/herdr-app/data/46-agents/`. They run no programs.
+- The Members list, tab bar and pane headers only read `members.json` and files under `~/.config/herdr-app/data/sakamichi-agents/`. The Members list also runs `hc label` to store each agent's member on its terminal (label `sakamichi.member`), so every Herdr connected to that machine shows the same member.
 - Setting an avatar runs `cp` (or `curl` for a URL you entered), `sips`, `osascript` with the mod's own `face.jxa` for face detection, and `mv`.
 - The network is used only for an avatar URL you entered and for **公式サイトの写真を取り込む**, which contacts the shown group's site: `www.nogizaka46.com`, `sakurazaka46.com`, or `www.hinatazaka46.com` and `cdn.hinatazaka46.com`.
-- `statusline.mjs` saves the model name and the two percentages per terminal. It reads no credentials.
+- `statusline.mjs` runs `hc label` to save the model name and the two percentages on its terminal (label `sakamichi.session`), so every Herdr connected to that machine shows the HP and MP bars. It reads no credentials.
 - Nothing changes your keys.
 
 Use avatar images you have the right to use.

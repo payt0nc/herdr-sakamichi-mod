@@ -34,7 +34,7 @@
 
 いちばん簡単なのは、Herdr の中でエージェントに頼む方法です。
 
-> Read ~/.config/herdr-app/AGENTS.md, then add the layout from <https://github.com/payt0nc/herdr-sakamichi-mod> (folder `n46`). Read n46/RECIPE.md first.
+> Read ~/.config/herdr-app/AGENTS.md, then add the layout from <https://github.com/payt0nc/herdr-sakamichi-mod> (folder `sakamichi`). Read sakamichi/RECIPE.md first.
 
 手動の場合：
 
@@ -48,21 +48,21 @@
 
    ```sh
    H=~/.config/herdr-app
-   cp n46/layouts/46.json n46/layouts/46.svg "$H/layouts/"
-   cp n46/themes/n46.json n46/themes/s46.json n46/themes/h46.json "$H/themes/"
-   cp -R n46/mods/46-agents n46/mods/46-pane n46/mods/46-tabs "$H/mods/"
+   cp sakamichi/layouts/sakamichi.json sakamichi/layouts/sakamichi.svg "$H/layouts/"
+   cp sakamichi/themes/n46.json sakamichi/themes/s46.json sakamichi/themes/h46.json "$H/themes/"
+   cp -R sakamichi/mods/sakamichi-agents sakamichi/mods/sakamichi-pane sakamichi/mods/sakamichi-tabs "$H/mods/"
    ```
 
 3. mod をチェックします。それぞれ `check passed` と表示されます。
 
    ```sh
-   for m in 46-agents 46-pane 46-tabs; do herdr-app check "$H/mods/$m"; done
+   for m in sakamichi-agents sakamichi-pane sakamichi-tabs; do herdr-app check "$H/mods/$m"; done
    ```
 
 4. レイアウトを切り替えます。
 
    ```sh
-   herdr-app do layout.switch '{"name":"46"}'
+   herdr-app do layout.switch '{"name":"sakamichi"}'
    ```
 
 同じ名前のファイルがある場合は、上書きせずに新しい方の名前を変えてください。`ctrl-shift-l` でいつでも自分のレイアウトに戻れます。
@@ -74,18 +74,18 @@
 ```json
 "statusLine": {
   "type": "command",
-  "command": "node ~/.config/herdr-app/mods/46-agents/statusline.mjs",
+  "command": "node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs",
   "refreshInterval": 10
 }
 ```
 
-すでにステータスラインがある場合は、そのコマンドをスクリプトの後ろに付けます（例：`node ~/.config/herdr-app/mods/46-agents/statusline.mjs ccstatusline`）。今までどおり表示されます。
+すでにステータスラインがある場合は、そのコマンドをスクリプトの後ろに付けます（例：`node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs ccstatusline`）。今までどおり表示されます。
 
 ## 使い方
 
 ### メンバーと状態
 
-エージェントには、表示中のグループの空いているメンバーがランダムに割り当てられ、再起動しても変わりません。グループ全員（乃木坂46 33 人、櫻坂46 30 人、日向坂46 26 人）が埋まるまで、同じメンバーが重なることはありません。Herdr でピン留めしたエージェントが先頭に来ます。カードをクリックするとそのエージェントに移動します。
+エージェントには、表示中のグループの空いているメンバーがランダムに割り当てられ、再起動しても変わりません。同じマシンに接続したどの Herdr でも、エージェントには同じメンバーが表示されます。グループ全員（乃木坂46 33 人、櫻坂46 30 人、日向坂46 26 人）が埋まるまで、同じメンバーが重なることはありません。Herdr でピン留めしたエージェントが先頭に来ます。カードをクリックするとそのエージェントに移動します。
 
 | 状態（`ja` / `en`） | アイコン | カード |
 | --- | --- | --- |
@@ -118,7 +118,7 @@
 
 ### 設定ファイル
 
-`~/.config/herdr-app/mods/46-agents/members.json`：
+`~/.config/herdr-app/mods/sakamichi-agents/members.json`：
 
 | キー | 効果 |
 | --- | --- |
@@ -128,32 +128,33 @@
 
 mod を更新すると `members.json` は上書きされるので、先に `pins` を控えておいてください。
 
-## `n46-*` からのアップグレード
+## `46-*`・`n46-*` からのアップグレード
 
-2026 年 11 月まで、レイアウトは `n46`、mod は `n46-agents`・`n46-pane`・`n46-tabs` という名前でした。新しいファイルをインストールしたら：
+2026 年 11 月まで、レイアウトは `46`、mod は `46-agents`・`46-pane`・`46-tabs` という名前でした（その前は `n46` と `n46-agents`・`n46-pane`・`n46-tabs`）。新しいファイルをインストールしたら：
 
-1. `46` レイアウトに切り替えます。`46-agents` は初回起動時に、旧名からメンバーの割り当て・グループ・アバターをコピーします。
-2. `~/.claude/settings.json` の `statusLine` のコマンドを `mods/46-agents/statusline.mjs` に変更します。
-3. 「アンインストール」の 2 行目の `rm` で古いファイルを削除します。
+1. `sakamichi` レイアウトに切り替えます。`sakamichi-agents` は初回起動時に、旧名からメンバーの割り当て・グループ・アバターをコピーします。
+2. `~/.claude/settings.json` の `statusLine` のコマンドを `mods/sakamichi-agents/statusline.mjs` に変更します。
+3. 「アンインストール」の `# names before` と `# the first names` の 2 行の `rm` で古いファイルを削除します。
 
 ## アンインストール
 
 ```sh
 H=~/.config/herdr-app
 herdr-app do layout.switch '{"name":"main"}'
-rm -rf "$H/mods/46-agents" "$H/mods/46-pane" "$H/mods/46-tabs" "$H/data/46-agents"
-rm -rf "$H/mods/n46-agents" "$H/mods/n46-pane" "$H/mods/n46-tabs" "$H/data/n46-agents" "$H/layouts/n46.json" "$H/layouts/n46.svg" # names before Nov 2026
-rm -f "$H/layouts/46.json" "$H/layouts/46.svg" "$H/themes/n46.json" "$H/themes/s46.json" "$H/themes/h46.json"
+rm -rf "$H/mods/sakamichi-agents" "$H/mods/sakamichi-pane" "$H/mods/sakamichi-tabs" "$H/data/sakamichi-agents"
+rm -rf "$H/mods/46-agents" "$H/mods/46-pane" "$H/mods/46-tabs" "$H/data/46-agents" "$H/layouts/46.json" "$H/layouts/46.svg" # names before Nov 2026
+rm -rf "$H/mods/n46-agents" "$H/mods/n46-pane" "$H/mods/n46-tabs" "$H/data/n46-agents" "$H/layouts/n46.json" "$H/layouts/n46.svg" # the first names
+rm -f "$H/layouts/sakamichi.json" "$H/layouts/sakamichi.svg" "$H/themes/n46.json" "$H/themes/s46.json" "$H/themes/h46.json"
 ```
 
 `statusLine` を追加した場合は、`~/.claude/settings.json` からも削除してください。
 
 ## あなたのマシンで実行されるもの
 
-- メンバー一覧、タブバー、ペインのヘッダーは、`members.json` と `~/.config/herdr-app/data/46-agents/` 以下のファイルを読むだけで、プログラムは実行しません。
+- メンバー一覧、タブバー、ペインのヘッダーは、`members.json` と `~/.config/herdr-app/data/sakamichi-agents/` 以下のファイルを読みます。メンバー一覧はさらに `hc label` を実行し、各エージェントのメンバーをターミナルのラベル（`sakamichi.member`）に保存します。そのマシンに接続したどの Herdr でも同じメンバーが表示されます。
 - アバターを設定するときは `cp`（URL の場合は `curl`）、`sips`、顔検出用に mod 同梱の `face.jxa` を `osascript` で、そして `mv` を実行します。
 - ネットワークを使うのは、入力したアバターの URL と **公式サイトの写真を取り込む** のときだけです。後者は表示中のグループの公式サイト（`www.nogizaka46.com`、`sakurazaka46.com`、または `www.hinatazaka46.com` と `cdn.hinatazaka46.com`）に接続します。
-- `statusline.mjs` はターミナルごとにモデル名と 2 つのパーセンテージを保存します。認証情報は読みません。
+- `statusline.mjs` は `hc label` でモデル名と 2 つのパーセンテージをターミナルのラベル `sakamichi.session` に保存します。そのマシンに接続したすべての Herdr で HP と MP のバーが表示されます。認証情報は読みません。
 - キー設定は変更しません。
 
 アバターには、使用する権利のある画像を使ってください。

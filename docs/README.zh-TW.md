@@ -34,7 +34,7 @@
 
 最快的方式是在 Herdr 裡請你的 agent 執行：
 
-> Read ~/.config/herdr-app/AGENTS.md, then add the layout from https://github.com/payt0nc/herdr-sakamichi-mod (folder `n46`). Read n46/RECIPE.md first.
+> Read ~/.config/herdr-app/AGENTS.md, then add the layout from https://github.com/payt0nc/herdr-sakamichi-mod (folder `sakamichi`). Read sakamichi/RECIPE.md first.
 
 手動安裝：
 
@@ -48,21 +48,21 @@
 
    ```sh
    H=~/.config/herdr-app
-   cp n46/layouts/46.json n46/layouts/46.svg "$H/layouts/"
-   cp n46/themes/n46.json n46/themes/s46.json n46/themes/h46.json "$H/themes/"
-   cp -R n46/mods/46-agents n46/mods/46-pane n46/mods/46-tabs "$H/mods/"
+   cp sakamichi/layouts/sakamichi.json sakamichi/layouts/sakamichi.svg "$H/layouts/"
+   cp sakamichi/themes/n46.json sakamichi/themes/s46.json sakamichi/themes/h46.json "$H/themes/"
+   cp -R sakamichi/mods/sakamichi-agents sakamichi/mods/sakamichi-pane sakamichi/mods/sakamichi-tabs "$H/mods/"
    ```
 
 3. 檢查 mod，每個都會印出 `check passed`：
 
    ```sh
-   for m in 46-agents 46-pane 46-tabs; do herdr-app check "$H/mods/$m"; done
+   for m in sakamichi-agents sakamichi-pane sakamichi-tabs; do herdr-app check "$H/mods/$m"; done
    ```
 
 4. 切換到這個 layout：
 
    ```sh
-   herdr-app do layout.switch '{"name":"46"}'
+   herdr-app do layout.switch '{"name":"sakamichi"}'
    ```
 
 如果已經有同名檔案，把新的改名，不要覆蓋你自己的。`ctrl-shift-l` 隨時可以切回你自己的 layout。
@@ -74,18 +74,18 @@
 ```json
 "statusLine": {
   "type": "command",
-  "command": "node ~/.config/herdr-app/mods/46-agents/statusline.mjs",
+  "command": "node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs",
   "refreshInterval": 10
 }
 ```
 
-已經有 status line 了？把它的指令接在腳本後面，例如 `node ~/.config/herdr-app/mods/46-agents/statusline.mjs ccstatusline`，它會照常顯示。
+已經有 status line 了？把它的指令接在腳本後面，例如 `node ~/.config/herdr-app/mods/sakamichi-agents/statusline.mjs ccstatusline`，它會照常顯示。
 
 ## 使用
 
 ### 成員與狀態
 
-每個 agent 會隨機分到顯示中團體裡一位還沒被分走的成員，重新啟動後也不變；整個團體都分完後（乃木坂46 33 位、櫻坂46 30 位、日向坂46 26 位）才會有兩個 agent 同一位成員。在 Herdr 釘選的 agent 排在最前面。點卡片會跳到那個 agent。
+每個 agent 會隨機分到顯示中團體裡一位還沒被分走的成員，重新啟動後也不變，連到同一台機器的每個 Herdr 也都顯示同一位成員；整個團體都分完後（乃木坂46 33 位、櫻坂46 30 位、日向坂46 26 位）才會有兩個 agent 同一位成員。在 Herdr 釘選的 agent 排在最前面。點卡片會跳到那個 agent。
 
 | 狀態（`ja` / `en`） | 圖示 | 卡片 |
 | --- | --- | --- |
@@ -118,7 +118,7 @@
 
 ### 設定檔
 
-`~/.config/herdr-app/mods/46-agents/members.json`：
+`~/.config/herdr-app/mods/sakamichi-agents/members.json`：
 
 | 鍵 | 效果 |
 | --- | --- |
@@ -128,32 +128,33 @@
 
 更新 mod 會覆蓋 `members.json`，更新前先把你的 `pins` 存下來。
 
-## 從 `n46-*` 名稱升級
+## 從 `46-*` 或 `n46-*` 名稱升級
 
-2026 年 11 月以前，layout 叫 `n46`，mod 叫 `n46-agents`、`n46-pane`、`n46-tabs`。安裝新檔案後：
+2026 年 11 月以前，layout 叫 `46`，mod 叫 `46-agents`、`46-pane`、`46-tabs`（更早是 `n46` 和 `n46-agents`、`n46-pane`、`n46-tabs`）。安裝新檔案後：
 
-1. 切換到 `46` layout。`46-agents` 第一次啟動時，會從舊名稱複製你的成員分配、團體和頭像。
-2. 把 `~/.claude/settings.json` 裡 `statusLine` 的指令改成 `mods/46-agents/statusline.mjs`。
-3. 用「移除」一節的第二行 `rm` 刪掉舊檔案。
+1. 切換到 `sakamichi` layout。`sakamichi-agents` 第一次啟動時，會從舊名稱複製你的成員分配、團體和頭像。
+2. 把 `~/.claude/settings.json` 裡 `statusLine` 的指令改成 `mods/sakamichi-agents/statusline.mjs`。
+3. 用「移除」一節中標著 `# names before` 和 `# the first names` 的兩行 `rm` 刪掉舊檔案。
 
 ## 移除
 
 ```sh
 H=~/.config/herdr-app
 herdr-app do layout.switch '{"name":"main"}'
-rm -rf "$H/mods/46-agents" "$H/mods/46-pane" "$H/mods/46-tabs" "$H/data/46-agents"
-rm -rf "$H/mods/n46-agents" "$H/mods/n46-pane" "$H/mods/n46-tabs" "$H/data/n46-agents" "$H/layouts/n46.json" "$H/layouts/n46.svg" # names before Nov 2026
-rm -f "$H/layouts/46.json" "$H/layouts/46.svg" "$H/themes/n46.json" "$H/themes/s46.json" "$H/themes/h46.json"
+rm -rf "$H/mods/sakamichi-agents" "$H/mods/sakamichi-pane" "$H/mods/sakamichi-tabs" "$H/data/sakamichi-agents"
+rm -rf "$H/mods/46-agents" "$H/mods/46-pane" "$H/mods/46-tabs" "$H/data/46-agents" "$H/layouts/46.json" "$H/layouts/46.svg" # names before Nov 2026
+rm -rf "$H/mods/n46-agents" "$H/mods/n46-pane" "$H/mods/n46-tabs" "$H/data/n46-agents" "$H/layouts/n46.json" "$H/layouts/n46.svg" # the first names
+rm -f "$H/layouts/sakamichi.json" "$H/layouts/sakamichi.svg" "$H/themes/n46.json" "$H/themes/s46.json" "$H/themes/h46.json"
 ```
 
 如果加過 `statusLine`，也從 `~/.claude/settings.json` 移除。
 
 ## 會在你的電腦上執行什麼
 
-- 成員清單、分頁列和 pane 標題列只讀 `members.json` 與 `~/.config/herdr-app/data/46-agents/` 底下的檔案，不執行任何程式。
+- 成員清單、分頁列和 pane 標題列只讀 `members.json` 與 `~/.config/herdr-app/data/sakamichi-agents/` 底下的檔案。成員清單另外會執行 `hc label`，把每個 agent 的成員存在它的終端機標籤（`sakamichi.member`）上，所以連到那台機器的每個 Herdr 都顯示同一位成員。
 - 設定頭像時會執行 `cp`（輸入網址時改用 `curl`）、`sips`、用 `osascript` 跑 mod 內附的 `face.jxa` 做臉部偵測，以及 `mv`。
 - 只有你輸入的頭像網址和 **公式サイトの写真を取り込む** 會用到網路；後者連線到顯示中團體的官網：`www.nogizaka46.com`、`sakurazaka46.com`，或 `www.hinatazaka46.com` 與 `cdn.hinatazaka46.com`。
-- `statusline.mjs` 依終端機存下模型名稱和兩個百分比，不讀任何憑證。
+- `statusline.mjs` 用 `hc label` 把模型名稱和兩個百分比存在終端機的標籤 `sakamichi.session`，連到那台機器的每個 Herdr 都會顯示 HP 和 MP 條。不讀任何憑證。
 - 不會改動你的按鍵設定。
 
 請使用你有權使用的頭像圖片。

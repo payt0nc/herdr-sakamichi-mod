@@ -100,7 +100,7 @@ chore(members): add the 7th generation to the roster
 
 ## Versioning: Semantic Versioning
 
-Releases are git tags `vMAJOR.MINOR.PATCH` on `main`, with release notes generated from the commits since the previous tag.
+Releases are git tags `vMAJOR.MINOR.PATCH` on `main`, with release notes generated from the commits since the previous tag. [release-please](https://github.com/googleapis/release-please) automates this: every push to `main` updates a release pull request that bumps `version.txt` and `CHANGELOG.md`, and merging it tags the release and publishes it on GitHub.
 
 ### The public interface
 
